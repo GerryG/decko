@@ -9,7 +9,6 @@ Gemfile.lock
 coverage
 doc
 log/*
-pkg
 wagn*gem
 card*gem
 decko*gem

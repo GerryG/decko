@@ -61,11 +61,14 @@ end
 def store_each_history_field action_id, fields=nil
   # FIXME: should be one bulk insert
   fields ||= Card::Change::TRACKED_FIELDS
-  fields.each do |field|
+  ipld_chg = fields.each_with_object({}) do |field, h|
+    value = yield(field),
     Card::Change.create field: field,
-                        value: yield(field),
+                        value: value,
                         card_action_id: action_id
+    h[field] = value unless field == 'trash'
   end
+  Ipld.publish card, ipld_chg if ipld_chg.present?
 end
 
 def finalize_action?
