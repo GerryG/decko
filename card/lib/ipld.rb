@@ -3,16 +3,19 @@ require 'ffi'
 module Ipld
   extend FFI::Library
 
-  ffi_lib './libipld.so'
-  attach_function :go_publish, [:string], :string
+  begin
+    ffi_lib 'libcard.so' # set LD_LIBRARY_PATH to .so dir
+    attach_function :ipldpublish, [:string], :string
+  rescue => e
+    Rails.logger.info "Could not attache libcard.so, #{e.message}"
+    raise "Not attached libipld"
+  end
 
-  def publish card, user, changes
-    h['type'] = card.type.lpfs_hash if changes['type_id']
-    if changes['name'] {
-      h['name'] = card.name
-      h['key'] = card.key
-    }
-    h['author'] = user.lpfs_hash
-    card.lpfs_hash = go_publish JSON.generate(h)
+  class << self
+    def publish card, user, changes
+      Rails.logger.info "pub C:#{card} U:#{user}, chg:#{changes}"
+      h = {}
+      ipldpublish JSON.generate(h) if h.any?
+    end
   end
 end
