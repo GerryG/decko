@@ -1,5 +1,5 @@
 
-package main
+package card
 
 import (
 	//"ipld https://github.com/ipld/go-ipld"
