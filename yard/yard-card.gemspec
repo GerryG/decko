@@ -3,7 +3,7 @@
 yard_card_version = "0.0.1"
 
 Gem::Specification.new do |s|
-  s.name = "yard_card"
+  s.name = "yard-card"
   s.version = yard_card_version
 
   s.authors =
