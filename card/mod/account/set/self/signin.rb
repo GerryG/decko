@@ -1,4 +1,6 @@
-
+#
+# Testing a pre-amble that might help yard find set docs
+#
 # The Sign In card manages logging in and out of the site.
 #
 # /:signin (core view) gives the login ui
@@ -7,7 +9,7 @@
 # /update/:signin is the login action
 # /delete/:signin is the logout action
 
-# authentication event
+# authentication event: login action
 event :signin, :validate, on: :update do
   email = subfield :email
   email &&= email.content
@@ -22,6 +24,7 @@ event :signin_success, after: :signin do
   abort :success
 end
 
+# authentication event: logout action
 event :signout, :validate, on: :delete do
   Auth.signin nil
   abort :success
@@ -62,6 +65,8 @@ def signin_error_message account
   end
 end
 
+# this is triggered by the re
+# @param account is the +:account card for a user to attempt a reset
 def send_reset_password_email_or_fail account
   aborting do
     if account && account.active?
@@ -166,3 +171,4 @@ format :html do
                   nest_name: nest_name, skip_perms: true }]
   end
 end
+

@@ -31,6 +31,7 @@ class Card
       end
 
       #
+      #  TODO: fix tmp file related doc in code.
       #  When a Card application loads, it uses set modules to autogenerate
       #  tmp files that add module names (Card::Set::PATTERN::ANCHOR) and
       #  extend the module with Card::Set.

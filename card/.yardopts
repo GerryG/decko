@@ -2,9 +2,9 @@ lib/**/*.rb                       \
 mod/*/format/*.rb                 \
 mod/*/chunk/*.rb                  \
 mod/*/lib/**/*.rb                 \
-tmpsets/set*/**/*.rb -            \
+mod/*/set*/**/*.rb -            \
+--markup markdown \
 **/*.rdoc                         \
-GPL                               \
-LICENSE                           \
+GPL     \
+LICENSE \
 VERSION
---markup markdown
