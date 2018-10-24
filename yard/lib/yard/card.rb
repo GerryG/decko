@@ -1,6 +1,6 @@
 require "yard/card_loader"
 
-class Yard
+class YARD
     class Card < YARD::Handlers::Ruby::Base
         handles method_call(:format)
         handles method_call(:event)
@@ -15,11 +15,11 @@ class Yard
         end
 
         def namespace_from_path
-            if Yard::Card.modloader.nil?
-                Yard::Card.modloader = CardLoader.new Yard::Card.file
+            if YARD::Card.modloader.nil?
+                YARD::Card.modloader = CardLoader.new YARD::Card.file
             end
-            ns=Yard::Card.modloader.namespace
-            #log.warn "NS: #{Yard::Card.modloader.namespace}" if !ns.nil?; ns
+            ns=YARD::Card.modloader.namespace
+            #log.warn "NS: #{YARD::Card.modloader.namespace}" if !ns.nil?; ns
         end
 
         def param_details prms
@@ -30,21 +30,21 @@ class Yard
         end
 
         def check_path
-            if Yard::Card.file != @parser.file
-                Yard::Card.file= @parser.file
+            if YARD::Card.file != @parser.file
+                YARD::Card.file= @parser.file
                 ns=namespace_from_path
-                #log.warn "New mod file: #{Yard::Card.file}#{@parser.namespace.nil? ? "" : " NS: #{ns.inspect}, #{@parser.namespace.inspect}"}"
+                #log.warn "New mod file: #{YARD::Card.file}#{@parser.namespace.nil? ? "" : " NS: #{ns.inspect}, #{@parser.namespace.inspect}"}"
             #else
-            #    log.warn "filter parh #{Yard::Card.file} #{path}"; nil
+            #    log.warn "filter parh #{YARD::Card.file} #{path}"; nil
             end
-            !Yard::Card.modloader.namespace.nil?
+            !YARD::Card.modloader.namespace.nil?
         end
 
         def process
             if check_path
                 #log.warn "Vars:#{instance_variables.map(&:to_s)*", "}"
                 if @statement.namespace.nil?
-                    ns=Yard::Card.modloader.namespace
+                    ns=YARD::Card.modloader.namespace
                     if !ns.nil?
                         newns=@namespace=YARD::CodeObjects::NamespaceObject.new(@statement.namespace, ns)
                         #log.warn "Set ns to #{ns} yns:#{newns}"
@@ -59,7 +59,7 @@ class Yard
                 #log.warn "Name[#{name}]  R Prms: #{param_details rest} classes [#{rest.nil? ? "nil" : rest.map(&:class)*"; "}]"
                 case meth
                 when :format
-                    ns = Yard::Card.modloader.format_class name
+                    ns = YARD::Card.modloader.format_class name
                     newns=@namespace=YARD::CodeObjects::NamespaceObject.new(:root, ns)
                     #log.warn "Set format ns #{ns} to #{newns.inspect}"
                 when :view
@@ -71,7 +71,7 @@ class Yard
         end
     end
 
-    class Yard::CardClass < Yard::Card
+    class YARD::CardClass < YARD::Card
         handles :class, :sclass
         def process
             if check_path
@@ -87,7 +87,7 @@ class Yard
         end
     end
 
-    class Yard::CardDef < Yard::Card
+    class YARD::CardDef < YARD::Card
         handles :def
         def process
             if check_path

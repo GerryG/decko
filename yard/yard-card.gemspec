@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.homepage      = "http://decko.org"
   s.licenses      = ["GPL-2.0", "GPL-3.0"]
 
-  s.files         = Dir["LICENSE", "GPL", "{lib}/**/*"]
+  s.files         = Dir["LICENSE", "GPL", "{lib}/**/*", "templates/**/*"]
 
   s.require_paths = ["lib"]
 

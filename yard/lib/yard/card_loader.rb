@@ -6,7 +6,7 @@ require "active_support/core_ext/string/inflections"
 #
 # Path format: set/<name>/<set-key>/<0-N 'parameter cards'>[/<freename>].rb
 #
-class Yard
+class YARD
     class CardLoader
 
         SET_PATTERNS = {
