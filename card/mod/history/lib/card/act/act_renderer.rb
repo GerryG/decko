@@ -26,6 +26,7 @@ class Card
 
       def render
         return "" unless @act_card
+
         act_accordion
       end
 
@@ -56,9 +57,10 @@ class Card
 
       def summary
         %i[create update delete draft].map do |type|
-          next unless count_types[type] > 0
-          "#{@format.action_icon type} #{count_types[type]}"
-        end.compact.join " | "
+          next unless count_types[type].positive?
+
+          "#{@format.action_icon type}<small> #{count_types[type]}</small>"
+        end.compact.join "<small class='text-muted'> | </small>"
       end
 
       def act_links
@@ -80,7 +82,7 @@ class Card
       end
 
       def approved_actions
-        @approved_actions ||= actions #.select { |a| a.card && a.card.ok?(:read) }
+        @approved_actions ||= actions # .select { |a| a.card && a.card.ok?(:read) }
         # FIXME: should not need to test for presence of card here.
       end
 
@@ -101,6 +103,7 @@ class Card
 
       def edited_ago
         return "" unless @act.acted_at
+
         "#{time_ago_in_words(@act.acted_at)} ago"
       end
 
@@ -122,7 +125,7 @@ class Card
       def act_accordion
         context = @act.main_action.draft ? :warning : :default
         <<-HTML
-        <div class="card card-#{context}">
+        <div class="card card-#{context} nodblclick">
           #{act_accordion_panel}
         </div>
         HTML
@@ -131,7 +134,6 @@ class Card
       def accordion_expand_options
         {
           "data-toggle" => "collapse",
-          "data-parent" => "#accordion-#{collapse_id}",
           "data-target" => ".#{collapse_id}",
           "aria-expanded" => true,
           "aria-controls" => collapse_id
@@ -154,7 +156,8 @@ class Card
 
       def act_accordion_body
         wrap_with :div, id: collapse_id,
-                  class: "collapse #{collapse_id}" do
+                        class: "collapse #{collapse_id}",
+                        "data-parent": ".act-accordion-group" do
           wrap_with :div, details, class: "card-body"
         end
       end
@@ -171,9 +174,9 @@ class Card
       #   not current, not deletion
       def rollback_link
         return unless card.ok? :update
-        wrap_with :div, class: "act-link collapse #{collapse_id} float-right" do
-          revert_link
 
+        wrap_with :div, class: "act-link collapse #{collapse_id} float-right" do
+          content_tag(:small, revert_link)
 
           # link_to "Save as current",
           #         class: "slotter", remote: true,
@@ -186,10 +189,11 @@ class Card
 
       def revert_link
         revert_actions_link "revert to this", revert_to: :this,
-                            slot_selector: ".card-slot.history-view"
+                                              slot_selector: ".card-slot.history-view"
       end
 
-      def revert_actions_link link_text, revert_to: :this, slot_selector: nil, html_args: {}
+      def revert_actions_link link_text,
+                              revert_to: :this, slot_selector: nil, html_args: {}
         @format.revert_actions_link @act, link_text,
                                     revert_to: revert_to,
                                     slot_selector: slot_selector,

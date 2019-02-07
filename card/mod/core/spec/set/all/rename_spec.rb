@@ -18,7 +18,7 @@ module RenameMethods
     end
     attrs_before = name_invariant_attributes(card)
     actions_count_before = card.actions.count
-    update card.name, name: new_name, update_referers: true
+    update! card.name, name: new_name, update_referers: true
     expect(card.actions.count).to eq(actions_count_before + 1)
     assert_equal attrs_before, name_invariant_attributes(card)
     assert_equal new_name, card.name
@@ -107,7 +107,7 @@ RSpec.describe Card::Set::All::Rename do
     end
 
     c = Card["Joe Card"]
-    c.update_attributes! name: "Card of Joe", update_referers: true
+    c.update! name: "Card of Joe", update_referers: true
     assert_equal "[[Card of Joe]]", Card["Admin Card"].content
   end
 
@@ -118,7 +118,7 @@ RSpec.describe Card::Set::All::Rename do
       Card.create! name: "Fruit+*type+*structure", content: "this [[Pit]]"
 
       assert_equal "this [[Pit]]", Card["Orange"].content
-      c.update_attributes! name: "Seed", update_referers: true
+      c.update! name: "Seed", update_referers: true
       assert_equal "this [[Seed]]", Card["Orange"].content
     end
   end

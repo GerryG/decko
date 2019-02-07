@@ -2,17 +2,21 @@
 
 RSpec.describe Card::Set::Right::Account do
   describe "#create" do
+    let(:dummy_account_args) do
+      {
+        name: "TmpUser",
+        "+*account" => {
+          "+*email" => "tmpuser@wagn.org",
+          "+*password" => "tmp_pass"
+        }
+      }
+    end
+
     context "valid user" do
       # note - much of this is tested in account_request_spec
       before do
         Card::Auth.as_bot do
-          @user_card = Card.create!(
-            name: "TmpUser",
-            type_id: Card::UserID,
-            "+*account" => {
-              "+*email" => "tmpuser@wagn.org", "+*password" => "tmp_pass"
-            }
-          )
+          @user_card = Card.create! dummy_account_args.merge(type_id: Card::UserID)
         end
       end
 
@@ -23,15 +27,18 @@ RSpec.describe Card::Set::Right::Account do
     end
 
     it "checks accountability of 'accounted' card" do
-      @unaccountable = Card.create(
-        name: "BasicUnaccountable",
-        "+*account" => {
-          "+*email" => "tmpuser@wagn.org",
-          "+*password" => "tmp_pass"
-        }
-      )
-      error_msg = @unaccountable.errors["+*account"].first
-      expect(error_msg).to eq("not allowed on this card")
+      unaccountable = Card.create(dummy_account_args)
+      expect(unaccountable.errors["+*account"].first).to eq("not allowed on this card")
+    end
+
+    it "works for any accountable card -- not just User type" do
+      Card::Auth.as_bot do
+        rule_name = Card::Name[%i[basic type accountable]]
+        Card.create! name: rule_name, content: "1"
+      end
+
+      accountable = Card.create(dummy_account_args)
+      expect(accountable.errors).to be_empty
     end
 
     it "requires email" do
@@ -107,19 +114,19 @@ RSpec.describe Card::Set::Right::Account do
     end
   end
 
-  describe "#update_attributes" do
+  describe "#update" do
     before do
       @account = Card::Auth.find_account_by_email("joe@user.com")
     end
 
     it "resets password" do
-      @account.password_card.update_attributes!(content: "new password")
+      @account.password_card.update!(content: "new password")
       authenticated = Card::Auth.authenticate "joe@user.com", "new password"
       assert_equal @account, authenticated
     end
 
     it "does not rehash password when updating email" do
-      @account.email_card.update_attributes! content: "joe2@user.com"
+      @account.email_card.update! content: "joe2@user.com"
       authenticated = Card::Auth.authenticate "joe2@user.com", "joe_pass"
       assert_equal @account, authenticated
     end
@@ -135,7 +142,7 @@ RSpec.describe Card::Set::Right::Account do
       Card::Auth.current_id = Card::AnonymousID
     end
 
-    let(:trigger_reset) { @account.update_attributes! trigger: :reset_password }
+    let(:trigger_reset) { @account.update! trigger: :reset_password }
 
     it "authenticates with correct token" do
       expect(Card::Auth.current_id).to eq(Card::AnonymousID)

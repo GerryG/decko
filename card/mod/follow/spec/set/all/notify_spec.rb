@@ -59,6 +59,7 @@ end
 RSpec.describe Card::Set::All::Notify do
   # typically notifications are not sent on non-web-requests
   before { described_class.force_notifications = true }
+
   after { described_class.force_notifications = false }
 
   def notification_email_for card_name, followed_set: "#{card_name}+*self"
@@ -67,7 +68,7 @@ RSpec.describe Card::Set::All::Notify do
     Card[:follower_notification_email].format.mail(
       context, { to: follower.email }, auth: follower,
                                        active_notice: { follower: follower.name,
-                                                        followed_set:  followed_set,
+                                                        followed_set: followed_set,
                                                         follow_option: "*always" }
     ).text_part.body.raw_source
   end
@@ -128,8 +129,9 @@ RSpec.describe Card::Set::All::Notify do
     end
 
     it "creates well formatted text message" do
-      path = File.expand_path "../notify_email.txt", __FILE__
-      expect(notification_email_for("card with fields")).to eq(File.read(path))
+      path = File.expand_path "notify_email.txt", __dir__
+      email = notification_email_for("card with fields").delete "\r"
+      expect(email).to eq(File.read(path))
     end
   end
 
@@ -148,11 +150,11 @@ RSpec.describe Card::Set::All::Notify do
     end
 
     def update card_name, new_content="updated content"
-      Card[card_name].update_attributes! content: new_content
+      Card[card_name].update! content: new_content
     end
 
     def update_name card_name, new_name="updated content"
-      Card[card_name].update_attributes! name: new_name, update_referers: true
+      Card[card_name].update! name: new_name, update_referers: true
     end
 
     def self.notify_on_create user, trigger, create_name

@@ -3,6 +3,7 @@ class Card
     module Permission
       def ok_view view, skip_perms=false
         raise Card::Error::UserError, tr(:too_deep) if subformats_nested_too_deeply?
+
         approved_view = check_view view, skip_perms
         handle_view_denial view, approved_view
         approved_view
@@ -10,6 +11,7 @@ class Card
 
       def handle_view_denial view, approved_view
         return if approved_view == view
+
         @denied_view = view
       end
 
@@ -24,7 +26,8 @@ class Card
 
       def unknown_disqualifies_view? view
         # view can't handle unknown cards (and card is unknown)
-        return if tagged view, :unknown_ok
+        return false if tagged view, :unknown_ok
+
         card.unknown?
       end
 

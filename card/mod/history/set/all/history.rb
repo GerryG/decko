@@ -9,7 +9,8 @@ def history_card_ids
 end
 
 # FIXME: optimize (no need to instantiate all actions and changes!)
-def first_change? # = update or delete
+def first_change?
+  # = update or delete
   @current_action.action_type != :create && @current_action.card.actions.size == 2 &&
     create_action.card_changes.empty?
 end
@@ -39,7 +40,7 @@ end
 def make_last_action_the_initial_action
   delete_all_changes
   old_actions.delete_all
-  last_action.update_attributes! action_type: :create
+  last_action.update! action_type: :create
 end
 
 def clear_history

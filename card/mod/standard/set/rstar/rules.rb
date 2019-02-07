@@ -1,8 +1,7 @@
-event :save_recently_edited_settings, :integrate,
-      on: :save, when: proc { |c| c.is_rule? } do
+event :save_recently_edited_settings, :integrate, on: :save, when: :is_rule? do
   if (recent = Card[:recent_settings])
     recent.insert_item 0, name.right
-    recent.save
+    attach_subcard recent
   end
 end
 
@@ -28,6 +27,10 @@ end
 
 def rule_setting_name
   name.tag
+end
+
+def short_help_text
+  Card[rule_setting_name].short_help_text
 end
 
 def rule_setting_title

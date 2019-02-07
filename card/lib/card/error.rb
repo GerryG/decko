@@ -35,8 +35,15 @@ class Card
 
     # error attributable to code (as opposed to card configuration)
     class ServerError < Error
-      self.view = :server_error
-      self.status_code = 500
+      def self.view
+        Card[:debugger]&.content =~ /on/ ? :debug_server_error : :server_error
+      end
+
+      def self.status_code
+        # Errors with status code 900 are displayed as modal instead of inside
+        # the "card-notice" div
+        Card[:debugger]&.content =~ /on/ ? 900 : 500
+      end
 
       def report
         super
@@ -97,10 +104,18 @@ class Card
           exception = card_error_class(exception, card).new exception.message
         end
         exception.card ||= card
+        add_card_errors card, exception if exception.card.errors.empty?
         exception
       end
 
+      def add_card_errors card, exception
+        label = exception.class.to_s.split("::").last
+        card.errors.add label, exception.message
+      end
+
       def card_error_class exception, card
+        # "simple" error messages are visible to end users and are generally not
+        # treated as software bugs (though they may be "shark" bugs)
         case exception
         when ActiveRecord::RecordInvalid
           invalid_card_error_class card

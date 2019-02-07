@@ -18,9 +18,9 @@ event :correct_identifier, :finalize,
   expire
 end
 
-event :save_original_filename, :prepare_to_store, when: :file_ready_to_save? do
+event :save_original_filename, :prepare_to_store, on: :save, when: :file_ready_to_save? do
   return unless @current_action
-  @current_action.update_attributes! comment: original_filename
+  @current_action.update! comment: original_filename
 end
 
 event :validate_file_exist, :validate, on: :save do

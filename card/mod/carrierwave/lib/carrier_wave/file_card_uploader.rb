@@ -47,7 +47,7 @@ module CarrierWave
   #               remote_file_url: "http://a.file.in/the.web"
   #
   # @example Updating a image card using a remote url
-  #   card.update_attributes remote_image_url: "http://a.image/somewhere.png"
+  #   card.update remote_image_url: "http://a.image/somewhere.png"
   #
   # ## Storage types
   # You can choose between four different storage options
@@ -93,7 +93,7 @@ module CarrierWave
   #   }
   #
   #   # wagn console or rake task:
-  #   card.update_attributes storage_type: :cloud, bucket: :aws_bucket
+  #   card.update storage_type: :cloud, bucket: :aws_bucket
   #
   # @example Creating a file card with fixed external link
   #   Card.create name: "file card", type_id: Card::FileID,
@@ -173,10 +173,10 @@ module CarrierWave
 
     def extension
       case
-      when file && file.extension.present? then ".#{file.extension}"
-      when card_content = model.content    then File.extname(card_content)
-      when orig = original_filename        then File.extname(orig)
-      else                                   ""
+      when file&.extension.present?     then ".#{file.extension}"
+      when card_content = model.content then File.extname(card_content)
+      when orig = original_filename     then File.extname(orig)
+      else                              ""
       end.downcase
     end
 
@@ -205,9 +205,10 @@ module CarrierWave
       end
     end
 
+    # @option opts [Symbol] :absolute - return absolute url
     def url opts={}
       if model.cloud?
-        file.url
+        file&.url
       elsif model.web?
         model.content
       else
@@ -216,8 +217,12 @@ module CarrierWave
     end
 
     def local_url opts={}
-      "%s/%s/%s" % [card_path(Card.config.files_web_path), file_dir,
-                    full_filename(url_filename(opts))]
+      "%s/%s/%s" % [local_url_base(opts), file_dir, full_filename(url_filename(opts))]
+    end
+
+    def local_url_base opts={}
+      web_path = Card.config.files_web_path
+      opts.delete(:absolute) ? card_url(web_path) : card_path(web_path)
     end
 
     def public_path

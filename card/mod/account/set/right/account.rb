@@ -27,7 +27,7 @@ event :set_default_salt, :prepare_to_validate, on: :create do
 end
 
 event :set_default_status, :prepare_to_validate, on: :create do
-  default_status = Auth.needs_setup? ? "active" : "pending"
+  default_status = left&.try(:default_account_status) || "active"
   add_subfield :status, content: default_status
 end
 
@@ -54,7 +54,7 @@ end
 
 event :reset_token do
   token = generate_token
-  Auth.as_bot { token_card.update_attributes! content: token }
+  Auth.as_bot { token_card.update! content: token }
   token
 end
 
@@ -65,7 +65,7 @@ end
 
 event :send_reset_password_token do
   Auth.as_bot do
-    token_card.update_attributes! content: generate_token
+    token_card.update! content: generate_token
   end
   Card[:password_reset_email].deliver self, to: email
 end
@@ -180,16 +180,8 @@ format :html do
       {{+#{:password.cardname}|titled;title:password}})
   end
 
-  view :edit do
-    voo.structure = true
+  before :content_formgroup do
     voo.edit_structure = [[:email, "email"], [:password, "password"]]
-    super()
-  end
-
-  view :edit_in_form do
-    voo.structure = true
-    voo.edit_structure = [[:email, "email"], [:password, "password"]]
-    super()
   end
 end
 

@@ -1,6 +1,5 @@
 require_dependency "card/act_manager/stage_director"
 
-
 class Card
   # Manages the whole process of creating an {act Card::Act} ie. changing
   # a card and attached subcards.
@@ -67,7 +66,7 @@ class Card
   #    the card invalid to save
   # 2) 'secure' means you are sure that the change doesn't affect the validation
   # 3) In all stages except IGwD:
-  #    If you call 'create', 'update_attributes' or 'save' the card will become
+  #    If you call 'create', 'update' or 'save' the card will become
   #    part of the same act and all stage of the validation and storage phase
   #    will be executed immediately for that card. The integration phase will be
   #    executed together with the act card and its subcards.
@@ -82,6 +81,7 @@ class Card
     class << self
       def act_director
         return unless act_card
+
         act_card.director
       end
 
@@ -91,6 +91,7 @@ class Card
 
       def run_act card
         self.act_card = card
+        # add new_director(card)
         yield
       ensure
         clear
@@ -109,12 +110,14 @@ class Card
         @directors = nil
       end
 
+      # FIXME: use "parent" instead of opts (it's the only option)
       def fetch card, opts={}
         return directors[card] if directors[card]
+
         directors.each_key do |dir_card|
           return dir_card.director if dir_card.name == card.name && dir_card.director
         end
-        directors[card] = new_director card, opts
+        add new_director(card, opts)
       end
 
       def include? name
@@ -144,11 +147,13 @@ class Card
 
       def card_changed old_card
         return unless (director = @directors.delete old_card)
+
         add director
       end
 
       def delete director
         return unless @directors
+
         @directors.delete director.card
         director.delete
       end
@@ -191,6 +196,7 @@ class Card
         self.act = Act.find act_id if act_id
         with_env_and_auth env, auth do
           return yield unless act
+
           run_act(act.card || card) do
             act_card.director.run_delayed_event act, &block
           end
@@ -207,7 +213,7 @@ class Card
 
       def to_s
         act_director.to_s
-        #directors.values.map(&:to_s).join "\n"
+        # directors.values.map(&:to_s).join "\n"
       end
     end
   end

@@ -15,17 +15,17 @@ RSpec.describe Card::ActManager::StageDirector do
         in_stage :validate,
                  on: :save,
                  trigger: -> { create_card } do
-          errors.add :stop, tr(:dont_do_this)
+          errors.add :stop, "don't do this"
         end
         is_expected.to be_falsey
       end
 
-      it "does not stop act in storage phase" do
+      it "stops act in storage phase" do
         in_stage :store, on: :save,
                          trigger: -> { create_card } do
-          errors.add :stop, tr(:dont_do_this)
+          errors.add :stop, "don't do this"
         end
-        is_expected.to be_truthy
+        is_expected.to be_falsey
       end
     end
 
@@ -446,12 +446,12 @@ RSpec.describe Card::ActManager::StageDirector do
   end
 
   describe "creating and updating cards in stages" do
-    it "update_attributes works in integrate stage" do
+    it "update works in integrate stage" do
       act_cnt = Card["A"].acts.size
       in_stage :integrate,
                on: :create,
                trigger: -> { Card.create! name: "act card" } do
-        Card["A"].update_attributes content: "changed content"
+        Card["A"].update content: "changed content"
       end
       expect(Card["A"].content).to eq "changed content"
       expect(Card["A"].acts.size).to eq(act_cnt), "no act added to A"
@@ -459,13 +459,13 @@ RSpec.describe Card::ActManager::StageDirector do
       expect(Card["A"].actions.last.act).to eq Card["act card"].acts.last
     end
 
-    it "update_attributes works integrate_with_delay stage" do
+    it "update works integrate_with_delay stage" do
       act_cnt = Card["A"].acts.size
       with_delayed_jobs 1 do
         in_stage :integrate_with_delay,
                  on: :create, for: "act card",
                  trigger: -> { Card.create! name: "act card" } do
-          Card["A"].update_attributes content: "changed content"
+          Card["A"].update content: "changed content"
         end
       end
       expect(Card["A"].content).to eq "changed content"

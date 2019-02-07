@@ -64,17 +64,13 @@ de:
       set:
         format:
           exception_alias_fail: cannot find %{optview} view in %{optmod}; failed to alias %{view} in %{self}
-  spec:
-    lib:
-      card:
-       stage_director_spec:
-        dont_do_this: tu das nicht  
   mod:
     :core:
       format:
         html_format:
           unknown_layout: "Unbekanntes Layout: %{name}"
           built_in: "Built-in Layouts: %{built_in_layouts}"
+          available_layouts: "Verfügbare Layouts: %{available_layouts}"
       set:
         all:
           codename: 

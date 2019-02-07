@@ -1,12 +1,17 @@
 class Card
   module Set
-    # Events are the building blocks of the three transformative card actions: _create_, _update_, and _delete_. (The fourth kind of action, _read_, does not transform cards, and is associated with {Card::Format views}, not events).
+    # Events are the building blocks of the three transformative card actions: _create_,
+    # _update_, and _delete_.
+    #
+    # (The fourth kind of action, _read_, does not transform cards, and is associated
+    # with {Card::Format views}, not events).
     #
     # Whenever you create, update, or delete a card, the card goes through three phases:
-    #   * __validation__ makes sure all the data is in order
-    #   * __storage__ puts the data in the database
-    #   * __integration__ deals with any ramifications of those changes
+    #   * __validate__ makes sure all the data is in order
+    #   * __store__ puts the data in the database
+    #   * __integrate__ deals with any ramifications of those changes
     #
+    # Events can be defined on each of these stages
     #
     class Event
       module Api
@@ -19,8 +24,8 @@ class Card
         on: %i[create update delete save read],
         changed: %i[name content db_content type type_id codename key],
         skip: :allowed,
-        trigger: :required,  # the event is only executed if triggered explicitly with
-                             # trigger: [event_name]
+        trigger: :required  # the event is only executed if triggered explicitly with
+        # trigger: [event_name]
       }.freeze
 
       CONDITIONS = ::Set.new(%i[on changed when skip trigger]).freeze

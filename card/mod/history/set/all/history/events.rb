@@ -1,4 +1,3 @@
-
 # must be called on all actions and before :set_name, :process_subcards and
 # :validate_delete_children
 event :assign_action, :initialize, when: :actionable? do
@@ -33,7 +32,7 @@ end
 # removes the action if there are no changes
 event :finalize_action, :finalize, when: :finalize_action? do
   if changed_fields.present?
-    @current_action.update_attributes! card_id: id
+    @current_action.update! card_id: id
 
     # Note: #last_change_on uses the id to sort by date
     # so the changes for the create changes have to be created before the first change
@@ -75,13 +74,13 @@ end
 event :rollback_actions, :prepare_to_validate, on: :update, when: :rollback_request? do
   update_args = process_revert_actions
   Env.params["revert_actions"] = nil
-  update_attributes! update_args
+  update! update_args
   clear_drafts
   abort :success
 end
 
 event :finalize_act, after: :finalize_action, when: :act_card? do
-  Card::ActManager.act.update_attributes! card_id: id
+  Card::ActManager.act.update! card_id: id
 end
 
 event :remove_empty_act, :integrate_with_delay_final, when: :remove_empty_act? do
