@@ -42,8 +42,8 @@ class CardController < ApplicationController
 
   #-------( FILTERS )
 
+  before_action :load_deck_from_query
   before_action :load_mark, only: [:read]
-  before_action :load_deck, only: [:read]
   before_action :setup, except: [:asset]
   before_action :authenticate, except: [:asset]
   before_action :load_card, except: [:asset]
@@ -60,13 +60,12 @@ class CardController < ApplicationController
     Card::Auth.signin_with token: params[:token], api_key: params[:api_key]
   end
 
-  def load_mark
-    params[:mark] = interpret_mark params[:mark]
+  def load_deck_from_query
+    params[:deck_id] = interpret_deck request.host, request.path
   end
 
-  # test (root card, first part of mark
-  def load_deck
-    params[:deck] = local_deck? params[:mark]
+  def load_mark
+    params[:mark] = interpret_mark params[:mark]
   end
 
   def load_card

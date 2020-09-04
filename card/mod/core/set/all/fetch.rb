@@ -15,6 +15,7 @@ module ClassMethods
   #      3. a codename (Symbol)
   #    If you pass more then one mark or an array of marks they get joined with a '+'.
   #    The final argument can be a hash to set the following options
+  #      :deck_id                    Select the deck
   #      :skip_virtual               Real cards only
   #      :skip_modules               Don't load Set modules
   #      :look_in_trash              Return trashed card objects
