@@ -42,9 +42,10 @@ class CardController < ApplicationController
 
   #-------( FILTERS )
 
+  before_action :load_mark, only: [:read]
+  before_action :load_deck, only: [:read]
   before_action :setup, except: [:asset]
   before_action :authenticate, except: [:asset]
-  before_action :load_mark, only: [:read]
   before_action :load_card, except: [:asset]
   before_action :load_action, only: [:read]
   before_action :refresh_card, only: [:create, :update, :delete]
@@ -61,6 +62,11 @@ class CardController < ApplicationController
 
   def load_mark
     params[:mark] = interpret_mark params[:mark]
+  end
+
+  # test (root card, first part of mark
+  def load_deck
+    params[:deck] = local_deck? params[:mark]
   end
 
   def load_card

@@ -128,6 +128,12 @@ module Decko
       end
     end
 
+    # returns :local or :other to indicate deck's category, whether served
+    # in this instance or another one. The rule is only :local can be updated
+    def local_deck mark
+      return :local
+    end
+
     def explicit_mark mark
       # we should find the place where we produce these bad urls
       mark.valid_encoding? ? mark : mark.force_encoding("ISO-8859-1").encode("UTF-8")
