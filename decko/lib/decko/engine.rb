@@ -15,15 +15,37 @@ require "builder"
 require "decko"
 
 module Decko
+
+  class << self
+
+  private
+
+    def locate_gem name
+      spec = Bundler.load.specs.find { |s| s.name == name }
+      unless spec
+        raise GemNotFound, "Could not find gem '#{name}' in the current bundle."
+      end
+      return File.expand_path("../../../", __FILE__) if spec.name == "bundler"
+      spec.full_gem_path
+    end
+  end
+
+  Decko.card_gem_root ||= locate_gem "card"
+
   class Engine < ::Rails::Engine
+    ddeck = Decko.default_deck ||= Deck.new(
+        root: Rails.root,
+        application: Rails.application,
+        gem_root: DECKO_GEM_ROOT
+      )
     paths.add "app/controllers",  with: "rails/controllers", eager_load: true
     paths.add "gem-assets",       with: "rails/assets"
     paths.add "config/routes.rb", with: "rails/engine-routes.rb"
-    paths.add "lib/tasks", with: "#{::Decko.gem_root}/lib/decko/tasks",
+    paths.add "lib/tasks", with: "#{ddeck.gem_root}/lib/decko/tasks",
                            glob: "**/*.rake"
     paths["lib/tasks"] << "#{::Cardio.gem_root}/lib/card/tasks"
     paths.add "lib/decko/config/initializers",
-              with: File.join(Decko.gem_root, "lib/decko/config/initializers"),
+              with: File.join(ddeck.gem_root, "lib/decko/config/initializers"),
               glob: "**/*.rb"
 
     initializer "decko.engine.load_config_initializers",
@@ -37,10 +59,10 @@ module Decko
                 before: "decko.engine.load_config_initializers" do
       # this code should all be in Decko somewhere, and it is now, gem-wize
       # Ideally railties would do this for us; this is needed for both use cases
-      Engine.paths["request_log"]   = Decko.paths["request_log"]
-      Engine.paths["log"]           = Decko.paths["log"]
-      Engine.paths["lib/tasks"]     = Decko.paths["lib/tasks"]
-      Engine.paths["config/routes.rb"] = Decko.paths["config/routes.rb"]
+      Engine.paths["request_log"]   = Decko.default_deck.paths["request_log"]
+      Engine.paths["log"]           = Decko.default_deck.paths["log"]
+      Engine.paths["lib/tasks"]     = Decko.default_deck.paths["lib/tasks"]
+      Engine.paths["config/routes.rb"] = Decko.default_deck.paths["config/routes.rb"]
     end
 
     initializer :connect_on_load do

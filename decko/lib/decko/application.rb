@@ -30,7 +30,7 @@ module Decko
     end
 
     def add_path paths, path, options={}
-      root = options.delete(:root) || Decko.gem_root
+      root = options.delete(:root) || Decko.default_deck.gem_root
       options[:with] = File.join(root, (options[:with] || path))
       paths.add path, options
     end
@@ -40,6 +40,7 @@ module Decko
         config = super
 
         Cardio.set_config config
+        Decko.default_deck.application = Rails.application
 
         # any config settings below:
         # (a) do not apply to Card used outside of a Decko context
@@ -93,3 +94,4 @@ module Decko
     end
   end
 end
+

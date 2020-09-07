@@ -125,7 +125,7 @@ module Cardio
       # set_clear_dependencies_hook hook in the railties gem in finisher.rb
 
       # TODO: move this to the right place in decko
-      config.autoload_paths += Dir["#{Decko.gem_root}/lib"]
+      config.autoload_paths += Dir["#{Decko.default_deck.gem_root}/lib"]
       # config.autoload_paths += Dir["#{gem_root}/lib/**/"]
       # config.autoload_paths += Dir["#{gem_root}/mod/*/lib/**/"]
       # config.autoload_paths += Dir["#{root}/mod/*/lib/**/"]

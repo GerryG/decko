@@ -76,8 +76,8 @@ decko_namespace = namespace :decko do
 
   desc "reset with an empty tmp directory"
   task :reset_tmp do
-    tmp_dir = Decko.paths["tmp"].first
-    if Decko.paths["tmp"].existent
+    tmp_dir = Decko.default_deck.paths["tmp"].first
+    if Decko.default_deck.paths["tmp"].existent
       Dir.foreach(tmp_dir) do |filename|
         next if filename.starts_with? "."
         FileUtils.rm_rf File.join(tmp_dir, filename), secure: true
@@ -110,7 +110,7 @@ decko_namespace = namespace :decko do
   end
 
   def prepped_asset_path
-    return if Rails.root.to_s == Decko.gem_root # inside decko gem
+    return if Rails.root.to_s == Decko.default_deck.gem_root # inside decko gem
     assets_path = File.join Rails.public_path, "assets"
     if File.symlink?(assets_path) || !File.directory?(assets_path)
       FileUtils.rm_rf assets_path

@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 
-Decko.application.routes.draw do
+Decko.default_deck.application.routes.draw do
   <% if @include_jasmine_engine %>
     if !Rails.env.production? && Object.const_defined?( :JasmineRails )
       engine = Object.const_get(:JasmineRails).const_get :Engine

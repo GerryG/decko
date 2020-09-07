@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-Decko.application.class.configure do
+Decko.default_deck.application.class.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
   config.eager_load = true
@@ -28,7 +28,7 @@ Decko.application.class.configure do
   config.assets.digest = true
 
   # Defaults to Rails.root.join("public/assets")
-  # config.assets.manifest = File.join(Decko.gem_root, "public/assets")
+  # config.assets.manifest = File.join(Decko.default_deck.gem_root, "public/assets")
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache

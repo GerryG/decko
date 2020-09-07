@@ -230,8 +230,8 @@ class DeckoGenerator < Rails::Generators::AppBase
 
   def defined_app_const_base
     Rails.respond_to?(:application) && defined?(Rails::Application) &&
-      Decko.application.is_a?(Rails::Application) &&
-      Decko.application.class.name.sub(/::Application$/, "")
+      Decko.default_deck.application.is_a?(Rails::Application) &&
+      Decko.default_deck.application.class.name.sub(/::Application$/, "")
   end
 
   alias defined_app_const_base? defined_app_const_base

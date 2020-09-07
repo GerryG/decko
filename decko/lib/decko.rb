@@ -1,41 +1,36 @@
+require 'active_support'
 
 module Decko
-  DECKO_GEM_ROOT = File.expand_path("../..", __FILE__)
 
-  class << self
-    def root
-      Rails.root
+  mattr_accessor :default_deck
+
+  def Decko.card_gem_root
+    @@card_gem_root ||= File.expand_path('../../../card', __FILE__)
+  end
+
+  class Deck
+
+    attr_reader :root, :application, :gem_root, :config, :paths
+
+    def inspect
+      "<Deck: r:#{root}, gr:#{gem_root}, cfg:#{config}, pth:#{paths.inspect} A:#{application.inspect}>"
     end
 
-    def application
-      Rails.application
+    def application= app
+      return unless @application = app
+      @config = app.config
+      @paths = app.paths
+      app
     end
 
-    def config
-      application.config
-    end
-
-    def paths
-      application.paths
-    end
-
-    def gem_root
-      DECKO_GEM_ROOT
-    end
-
-    def card_gem_root
-      @card_gem_root ||= locate_gem "card"
-    end
-
-    private
-
-    def locate_gem name
-      spec = Bundler.load.specs.find { |s| s.name == name }
-      unless spec
-        raise GemNotFound, "Could not find gem '#{name}' in the current bundle."
-      end
-      return File.expand_path("../../../", __FILE__) if spec.name == "bundler"
-      spec.full_gem_path
+    def initialize args
+      @root = args[:root]
+      @gem_root = args[:gem_root]
+      application = args[:application]
+      self
     end
   end
+
+  DECKO_GEM_ROOT = File.expand_path("../..", __FILE__)
+
 end
