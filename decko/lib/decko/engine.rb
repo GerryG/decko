@@ -12,9 +12,7 @@ require "bootstrap4-kaminari-views"
 require "diff/lcs"
 require "builder"
 
-require "decko"
-require "decko/deck"
-require "decko/response"
+require "decko/all"
 
 module Decko
 

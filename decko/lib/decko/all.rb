@@ -1,1 +1,5 @@
+require "decko"
+require "decko/deck"
+require "decko/rails"
+require "decko/response"
 require "decko/application"
