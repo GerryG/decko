@@ -101,7 +101,6 @@ module Cardio
 
     def set_config config
       @@config = config
-      config.active_job.queue_adapter = :delayed_job # better place for this?
 
       add_lib_dirs_to_autoload_paths config
 
@@ -125,7 +124,7 @@ module Cardio
       # set_clear_dependencies_hook hook in the railties gem in finisher.rb
 
       # TODO: move this to the right place in decko
-      config.autoload_paths += Dir["#{Decko.default_deck.gem_root}/lib"]
+      config.autoload_paths += Dir["#{gem_root}/lib"]
       # config.autoload_paths += Dir["#{gem_root}/lib/**/"]
       # config.autoload_paths += Dir["#{gem_root}/mod/*/lib/**/"]
       # config.autoload_paths += Dir["#{root}/mod/*/lib/**/"]

@@ -1,5 +1,8 @@
 # -*- encoding : utf-8 -*-
 
+require 'active_support'
+require 'rails'
+require 'cardio'
 require "decko/engine"
 require_relative "config/initializers/sedate_parser"
 
@@ -12,6 +15,10 @@ end
 
 module Decko
   class Application < Rails::Application
+    initializer :load_decko_deck_config_initializers,
+                before: :load_decko_environment_config, group: :all do
+    end
+
     initializer :load_decko_environment_config,
                 before: :load_environment_config, group: :all do
       add_path paths, "lib/decko/config/environments", glob: "#{Rails.env}.rb"
@@ -19,6 +26,7 @@ module Decko
         require environment
       end
     end
+
 
     class << self
       def inherited base
@@ -30,9 +38,10 @@ module Decko
     end
 
     def add_path paths, path, options={}
-      root = options.delete(:root) || Decko.default_deck.gem_root
+      root = options.delete(:root) || DECKO_GEM_ROOT
       options[:with] = File.join(root, (options[:with] || path))
       paths.add path, options
+
     end
 
     def config
@@ -40,7 +49,14 @@ module Decko
         config = super
 
         Cardio.set_config config
-        Decko.default_deck.application = Rails.application
+        config.active_job.queue_adapter = :delayed_job # better place for this?
+
+        Decko.default_deck = Decko::Deck.new(
+            root: Rails.root,
+            application: Rails.application,
+            gem_root: DECKO_GEM_ROOT
+          )
+        config_for(:decks)
 
         # any config settings below:
         # (a) do not apply to Card used outside of a Decko context
