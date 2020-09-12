@@ -24,7 +24,7 @@ module Decko
 
             parser.on("-d", "--spec FILENAME(:LINE)",
                       "Run spec for a Decko deck file") do |file|
-              opts[:files] = find_spec_file(file, "#{Decko.default_deck.root}/mod")
+              opts[:files] = find_spec_file(file, "#{Decko.gem_root}/mod")
             end
             parser.on("-c", "--core-spec FILENAME(:LINE)",
                       "Run spec for a Decko core file") do |file|

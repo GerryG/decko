@@ -10,6 +10,10 @@ module Decko
             parser.banner = "Usage: decko #{command} [options]\n\n" \
                           "Run decko:#{command} task on the production "\
                           " database specified in config/database.yml\n\n"
+            parser.on("--deck [DECK]", "-k",
+                      "#{command} use deck (default 1)") do |deck|
+              opts[:deck] = deck || 1
+            end
             parser.on("--production", "-p",
                       "#{command} production database (default)") do
               opts[:envs] = ["production"]

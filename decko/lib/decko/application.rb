@@ -17,10 +17,18 @@ module Decko
   class Application < Rails::Application
     initializer :load_decko_deck_config_initializers,
                 before: :load_decko_environment_config, group: :all do
+
+      Decko.default_deck = Decko::Deck.new(
+          root: Rails.root,
+          application: Rails.application,
+          gem_root: DECKO_GEM_ROOT
+        )
+      config_for(:decks)
     end
 
     initializer :load_decko_environment_config,
                 before: :load_environment_config, group: :all do
+
       add_path paths, "lib/decko/config/environments", glob: "#{Rails.env}.rb"
       paths["lib/decko/config/environments"].existent.each do |environment|
         require environment
@@ -41,7 +49,6 @@ module Decko
       root = options.delete(:root) || DECKO_GEM_ROOT
       options[:with] = File.join(root, (options[:with] || path))
       paths.add path, options
-
     end
 
     def config
@@ -50,13 +57,6 @@ module Decko
 
         Cardio.set_config config
         config.active_job.queue_adapter = :delayed_job # better place for this?
-
-        Decko.default_deck = Decko::Deck.new(
-            root: Rails.root,
-            application: Rails.application,
-            gem_root: DECKO_GEM_ROOT
-          )
-        config_for(:decks)
 
         # any config settings below:
         # (a) do not apply to Card used outside of a Decko context

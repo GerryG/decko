@@ -6,12 +6,13 @@ module Decko
     class RakeCommand < Command
       def initialize rake_task, args={}
         @task = rake_task
-        opts = {}
         if args.is_a? Array
+          opts = {args: args}
           Parser.new(rake_task, opts).parse!(args)
         else
           opts = args
         end
+        @deck = opts[:deck]
         @envs = Array(opts[:envs])
       end
 
@@ -31,7 +32,8 @@ module Decko
         task_cmd = "bundle exec rake #{@task}"
         return [task_cmd] if !@envs || @envs.empty?
         @envs.map do |env|
-          "env RAILS_ENV=#{env} #{task_cmd}"
+          deckopt = @deck ? "DECKO_DECK_ID=@deck " : ''
+          "env RAILS_ENV=#{env} #{deckopt}#{task_cmd}"
         end
       end
     end
