@@ -3,37 +3,11 @@
 # Decko's only controller.
 class CardController < ApplicationController
   include ::Card::Env::Location
-  include ::Recaptcha::Verify
+  include ::Recaptcha::Verify #FIXME make Recaptcha optional/pluggable
   include ::Decko::Response
 
   layout nil
   attr_reader :card
-
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  #  PUBLIC METHODS
-
-  def create
-    handle { card.save! }
-  end
-
-  def read
-    show
-  end
-
-  def update
-    card.new_card? ? create : handle { card.update! params[:card] }
-  end
-
-  def delete
-    handle { card.delete! }
-  end
-
-  # @deprecated
-  def asset
-    Rails.logger.info "Routing assets through Card. Recommend symlink from " \
-                      'Deck to Card gem using "rake decko:update_assets_symlink"'
-    send_deprecated_asset
-  end
 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   #  PRIVATE METHODS
@@ -81,57 +55,6 @@ class CardController < ApplicationController
 
   def refresh_card
     @card = card.refresh
-  end
-
-  # ----------( HELPER METHODS ) -------------
-
-  def handle
-    Card::Env.success card.name
-    yield ? cud_success : raise(Card::Error::UserError)
-  end
-
-  # successful create, update, or delete act
-  def cud_success
-    success = Card::Env.success.in_context card.name
-    if success.reload?
-      reload # instruct JSON to reload
-    else
-      redirect_cud_success success
-    end
-  end
-
-  def show view=nil, status=200
-    card.action = :read
-    format = load_format
-    result = render_page format, view
-    status = format.error_status || status
-    respond format, result, status
-  end
-
-  def render_page format, view
-    view ||= view_from_params
-    card.act do
-      format.page self, view, Card::Env.slot_opts
-    end
-  end
-
-  def view_from_params
-    params[:view] || params[:v]
-  end
-
-  def handle_exception exception
-    raise exception if debug_exception?(exception)
-    @card ||= Card.new
-    error = Card::Error.report exception, card
-    show error.class.view, error.class.status_code
-  end
-
-  # TODO: move to exception object
-  def debug_exception? e
-    !e.is_a?(Card::Error::UserError) &&
-      !e.is_a?(ActiveRecord::RecordInvalid) &&
-      Card::Codename[:debugger] &&
-      Card[:debugger]&.content =~ /on/  # && !Card::Env.ajax?
   end
 
   class << self
