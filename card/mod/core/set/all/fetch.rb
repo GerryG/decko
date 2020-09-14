@@ -65,7 +65,7 @@ module ClassMethods
     end
   end
 
-  # @param args - see #fetch
+  # @param mark_parts - see #fetch
   # @return [Integer]
   def fetch_id *mark_parts
     mark = Card::Fetch.new(*mark_parts)&.mark
