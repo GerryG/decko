@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
-require "decko/rest_spec_helper"
+require "decko/html_spec_helper"
 
-Decko::RestSpecHelper.describe_api do
+Decko::HtmlSpecHelper.describe_api do
   describe "#create" do
     before { login_as "joe_camel" }
 
@@ -11,30 +11,31 @@ Decko::RestSpecHelper.describe_api do
     #  test dependencies.
 
     it "redirects standard card creation" do
-      post :create, params: { mark: "NewCardFoo" }
-      assert_response 303
+      response=post "/NewCardFoo"
+      #post :create, params: { mark: "NewCardFoo" }
+      expect(response).to have_http_status(303)
     end
 
     it "doesn't redirect cards created in AJAX" do
-      post :create, xhr: true, params: { mark: "NewCardFoo" }
-      assert_response 200
+      response = post "/NewCardFoo", params: { xhr: true }
+      expect(response).to have_http_status(200)
     end
 
     it "handles permission denials" do
-      post :create, params: { card: { name: "LackPerms", type: "Html" } }
-      assert_response 403
+      response = post "/LackPerms.html"
+      expect(response).to have_http_status(403)
     end
 
     it "handles cards that are createable but not readable", with_user: Card::AnonymousID do
       # Fruits (from shared_data) are anon creatable but not readable
       # login_as :anonymous
-      post :create, params: { card: { type: "Fruit", name: "papayan" } }
-      assert_response 303
+      response = post "/papayan?type=Fruit"
+      expect(response).to have_http_status(303)
     end
 
     it "returns an error response if create fails (because it already exists)" do
       post :create, params: { card: { name: "Joe User" } }
-      assert_response 422
+      expect(response).to have_http_status(422)
     end
 
     it "retains card errors" do
@@ -45,7 +46,7 @@ Decko::RestSpecHelper.describe_api do
     context "success specified in request" do
       it "redirects to thanks if present" do
         post :create, params: { mark: "Wombly", success: "REDIRECT: /thank_you" }
-        assert_redirected_to "/thank_you"
+        expect(response).to redirected_to "/thank_you"
       end
 
       it "redirects to card if thanks is _self" do

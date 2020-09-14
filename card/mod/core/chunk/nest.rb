@@ -14,6 +14,10 @@ class Card
                                    full_re:    /\A\{\{([^\{\}]*)\}\}/,
                                    idx_char:  "{")
 
+        def ref_object
+          [:nest, @name, @options]
+        end
+
         def interpret match, _content
           in_brackets = strip_tags match[1]
           name, @opt_lists = in_brackets.split "|", 2

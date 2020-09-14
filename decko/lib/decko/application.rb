@@ -18,6 +18,7 @@ module Decko
       paths["lib/decko/config/environments"].existent.each do |environment|
         require environment
       end
+      middleware.use Decko::Rack::FetchCard
     end
 
     class << self

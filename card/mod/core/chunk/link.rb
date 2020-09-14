@@ -21,6 +21,10 @@ class Card
           CODE
         end
 
+        def ref_object
+          [:link, @name, @link_text]
+        end
+
         def interpret match, _content
           target, @link_text =
             if (raw_syntax = match[1])
