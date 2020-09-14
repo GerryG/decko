@@ -11,6 +11,9 @@ module Decko
     def receive data
     end
  
+    def action data
+    end
+
   private
     # maybe maybe add to Card as #channel_name
     def channel_name
