@@ -7,7 +7,7 @@ class Card
     # match by its pattern.
     #
     module Chunk
-      class Abstract
+      class Abstract < SimpleDelegator
         class_attribute :config
         attr_reader :text, :process_chunk
 
@@ -36,6 +36,11 @@ class Card
           @processed = nil
           @content = content
           interpret match, content
+          super(self.ref_object)
+        end
+
+        def ref_object
+          @text
         end
 
         def interpret _match_string, _content

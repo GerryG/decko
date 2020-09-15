@@ -1,6 +1,4 @@
-include_set Abstract::ProsemirrorEditor
-include_set Abstract::TinymceEditor
-include_set Abstract::AceEditor
+include_abstract_set :editor
 
 Self::InputOptions.add_to_basket :options, "text area"
 Self::InputOptions.add_to_basket :options, "text field"
@@ -46,6 +44,7 @@ format :html do
 
   # overridden by mods that provide rich text editors
   def rich_text_input
+    #FIXME: should select default differently, don't depend on an editor
     send "#{Cardio.config.rich_text_editor || :tinymce}_editor_input"
   end
 

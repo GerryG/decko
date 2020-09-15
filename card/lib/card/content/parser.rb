@@ -28,7 +28,7 @@ class Card
         @chunks
       end
 
-      private
+    private
 
       def parse_chunks
         prefix_regexp = Chunk.prefix_regexp @chunk_list
