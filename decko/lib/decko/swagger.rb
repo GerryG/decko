@@ -17,7 +17,7 @@ module Decko
     end
 
     def gem_swagger_dir
-      File.join Decko.default_deck.gem_root, "lib/decko/swagger"
+      File.join Decko.gem_root, "lib/decko/swagger"
     end
 
     def gem_input_dir

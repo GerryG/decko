@@ -1,6 +1,6 @@
 if defined?(CypressOnRails)
   CypressOnRails.configure do |c|
-    c.cypress_folder = File.join Decko.default_deck.gem_root, "spec", "cypress"
+    c.cypress_folder = File.join Decko::DECKO_GEM_ROOT, "spec", "cypress"
     # WARNING!! CypressOnRails can execute arbitrary ruby code
     # please use with extra caution if enabling on hosted servers or starting your
     # local server on 0.0.0.0

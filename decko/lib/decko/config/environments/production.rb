@@ -28,7 +28,7 @@ Decko.application.class.configure do
   config.assets.digest = true
 
   # Defaults to Rails.root.join("public/assets")
-  # config.assets.manifest = File.join(Decko.default_deck.gem_root, "public/assets")
+  # config.assets.manifest = File.join(Decko.root, "public/assets")
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache

@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_18_051236) do
-  create_table "card_actions", id: :integer, force: :cascade do |t|
+ActiveRecord::Schema.define(version: 2020_09_04_145907) do
+
+  create_table "card_actions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "card_id"
     t.integer "card_act_id"
     t.integer "super_action_id"
@@ -22,7 +23,7 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["card_id"], name: "card_actions_card_id_index"
   end
 
-  create_table "card_acts", id: :integer, force: :cascade do |t|
+  create_table "card_acts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "card_id"
     t.integer "actor_id"
     t.datetime "acted_at"
@@ -32,14 +33,14 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["card_id"], name: "card_acts_card_id_index"
   end
 
-  create_table "card_changes", id: :integer, force: :cascade do |t|
+  create_table "card_changes", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "card_action_id"
     t.integer "field"
     t.text "value", size: :medium
     t.index ["card_action_id"], name: "card_changes_card_action_id_index"
   end
 
-  create_table "card_references", id: :integer, force: :cascade do |t|
+  create_table "card_references", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "referer_id", default: 0, null: false
     t.string "referee_key", default: "", null: false
     t.integer "referee_id"
@@ -51,7 +52,7 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["referer_id"], name: "card_references_referer_id_index"
   end
 
-  create_table "card_revisions", id: :integer, force: :cascade do |t|
+  create_table "card_revisions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "card_id", null: false
     t.integer "creator_id", null: false
@@ -60,16 +61,17 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["creator_id"], name: "revisions_created_by_index"
   end
 
-  create_table "card_virtuals", id: :integer, force: :cascade do |t|
+  create_table "card_virtuals", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "left_id"
     t.integer "right_id"
     t.string "left_key"
     t.text "content", size: :medium
+    t.index ["left_id", "right_id"], name: "index_card_virtuals_on_left_id_and_right_id", unique: true
     t.index ["left_id"], name: "right_id_index"
     t.index ["right_id"], name: "left_id_index"
   end
 
-  create_table "cards", id: :integer, force: :cascade do |t|
+  create_table "cards", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
     t.string "key"
     t.string "codename"
@@ -86,9 +88,11 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.boolean "trash", null: false
     t.integer "type_id", null: false
     t.text "db_content", size: :medium
+    t.integer "deck_id", default: 1
     t.index ["codename"], name: "cards_codename_index"
     t.index ["created_at"], name: "cards_created_at_index"
-    t.index ["key"], name: "cards_key_index", unique: true
+    t.index ["key", "deck_id"], name: "cards_key_index", unique: true
+    t.index ["left_id", "right_id"], name: "index_cards_on_left_id_and_right_id", unique: true
     t.index ["left_id"], name: "cards_left_id_index"
     t.index ["name"], name: "cards_name_index"
     t.index ["read_rule_id"], name: "cards_read_rule_id_index"
@@ -97,7 +101,7 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["updated_at"], name: "cards_updated_at_index"
   end
 
-  create_table "delayed_jobs", force: :cascade do |t|
+  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", size: :medium, null: false
@@ -112,38 +116,24 @@ ActiveRecord::Schema.define(version: 2020_07_18_051236) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "schema_migrations_core_cards", id: false, force: :cascade do |t|
+  create_table "schema_migrations_core_cards", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "version", null: false
     t.index ["version"], name: "unique_schema_migrations_cards", unique: true
   end
 
-  create_table "schema_migrations_deck", primary_key: "version", id: :string, force: :cascade do |t|
+  create_table "schema_migrations_deck", primary_key: "version", id: :string, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
   end
 
-  create_table "schema_migrations_deck_cards", id: false, force: :cascade do |t|
+  create_table "schema_migrations_deck_cards", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "version", null: false
     t.index ["version"], name: "unique_schema_migrations_deck_cards", unique: true
   end
 
-  create_table "sessions", id: :integer, force: :cascade do |t|
+  create_table "sessions", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "session_id"
     t.text "data"
     t.datetime "updated_at"
     t.index ["session_id"], name: "sessions_session_id_index"
   end
 
-  create_table "users", id: :integer, force: :cascade do |t|
-    t.string "login", limit: 40
-    t.string "email", limit: 100
-    t.string "crypted_password", limit: 40
-    t.string "salt", limit: 42
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string "password_reset_code", limit: 40
-    t.string "status", default: "request"
-    t.integer "invite_sender_id"
-    t.string "identity_url"
-    t.integer "card_id", null: false
-    t.integer "account_id", null: false
-  end
 end
