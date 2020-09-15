@@ -9,7 +9,7 @@ When /^(?:|I )upload the (.+) "(.+)"$/ do |attachment_name, filename|
 end
 
 def find_file filename
-  roots = "{#{Cardio.root}/mod/**,#{Cardio.gem_root}/mod/**,#{Decko.root}}"
+  roots = "{#{Cardio.root}/mod/**,#{Cardio.gem_root}/mod/**,#{Decko::DECKO_GEM_ROOT}}"
   paths = Dir.glob(File.join(roots, "features", "support", filename))
   raise ArgumentError, "couldn't find file '#{filename}'" if paths.empty?
   paths.first

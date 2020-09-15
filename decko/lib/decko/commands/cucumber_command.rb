@@ -35,7 +35,7 @@ module Decko
       end
 
       def require_args
-        "-r #{Decko.gem_root}/features " +
+        "-r #{Decko::DECKO_GEM_ROOT}/features " +
           feature_paths.map { |path| "-r #{path}" }.join(" ")
       end
 

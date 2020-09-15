@@ -1,4 +1,6 @@
 
+require 'active_support'
+
 module Decko
   mattr_accessor :default_deck
 
