@@ -1,7 +1,6 @@
 mod 'content'
 mod 'fetch'
 mod 'storage'
-mod 'rails'
 mod 'active_record'
 mod 'utility'
 mod 'admin'
