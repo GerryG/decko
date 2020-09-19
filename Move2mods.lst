@@ -12,27 +12,29 @@
 # I'm setting up to run a series of git mv's after the subdirs are ready in
 # my working directory. The original paths with a comment about the nature of
 # of the ActiveRecord dependency, and then the pattern is:
-#mv <targ directory> <source directory> <list of files to move>
+#git mv <targ directory> <source directory> <list of files to move>
 # I'll edit the list into git mv commands and run them on this branch.
 
 #./card/config/initializers/02_patches/active_record.rb:  # ARDEP: configuration (in filename)
 #./card/config/initializers/patches.rb:# ARDEP: need to isolate this to named and optionally included place
-#mv card/mod/active_record/config/initializers card/config/initializers patches.rb
-#mv card/mod/active_record/config/initializers/02_patches card/config/initializers/02_patches active_record.rb
+git mv card/config/initializers/patches.rb card/mod/active_record/config/initializers
+git mv card/config/initializers/02_patches/active_record.rb card/mod/active_record/config/initializers/02_patches
 
 
 #./card/spec/lib/card/subcards_spec.rb:    # ARDEP: exception RecordInvalid
 #./card/spec/lib/card/set/required_field_spec.rb:      # ARDEP: exception RecordInvalid (apparently can't depend on it defined?)
-#mv card/mod/active_record/spec/lib/card card/spec/lib/card subcards_spec.rb
-#mv card/mod/active_record/set card/spec/lib/card/set/ required_field_spec.rb
+git mv card/spec/lib/card/subcards_spec.rb card/mod/active_record/spec/lib/card
+git mv card/spec/lib/card/set/required_field_spec.rb card/mod/active_record/set
 
 # card/mod/core/set/all/collection.rb:    # ARDEP: ::Relation
 # card/mod/core/set/all/states.rb:  # ARDEP: new_record? in storage API
 # card/mod/core/set/all/abort.rb:    # ARDEP: need a storage API to do this
-#mv card/mod/active_record/set/all card/mod/core/set/all collection.rb states.rb abort.rb
+git mv card/mod/core/set/all/collection.rb card/mod/active_record/set/all
+git mv card/mod/core/set/all/states.rb card/mod/active_record/set/all
+git mv card/mod/core/set/all/abort.rb card/mod/active_record/set/all
 
-#mv card/mod/active_record/spec/set/all card/mod/core/spec/set/all subcards_spec.rb
-#mv card/mod/active_record/spec/set/type card/mod/pointer/spec/set/type mirror_list_spec.rb
+git mv card/mod/core/spec/set/all/subcards_spec.rb card/mod/active_record/spec/set/all
+git mv card/mod/pointer/spec/set/type/mirror_list_spec.rb card/mod/active_record/spec/set/type
 
 # leave in history
 #./card/mod/history/set/all/history/act_listing.rb:  # ARDEP: Relation
@@ -40,39 +42,99 @@
 
 # card/mod/carrierwave/spec/set/abstract/attachment/cloud_spec.rb:    # ARDEP: exceptions RecordInvalid
 # card/mod/carrierwave/spec/set/type/file_spec.rb:      # ARDEP: exceptions RecordInvalid
-#mv card/mod/active_record/spec/set/type card/mod/carrierwave/spec/set/abstract cloud_spec.rb
-#mv card/mod/active_record/spec/set/type card/mod/carrierwave/spec/set/type mirror_list_spec.rb
+#git mv card/mod/carrierwave/spec/set/abstract/cloud_spec.rb card/mod/active_record/spec/set/abstract
+#git mv card/mod/carrierwave/spec/set/type/mirror_list_spec.rb card/mod/active_record/spec/set/type
 
 #./card/lib/generators/card.rb:    # ARDEP: migration generators
 #./card/lib/application_record.rb:# ARDEP: refactor this to a factory for configured storage modules that can store and use ActiveModel
 
-./card/lib/cardio.rb:      # ARDEP: connection object
-./card/lib/cardio/schema.rb:        # ARDEP: migrations
+#./card/lib/cardio.rb:      # ARDEP: connection object
+#./card/lib/cardio/schema.rb:        # ARDEP: migrations
 
 #./card/lib/card/model/save_helper.rb:    # ARDEP: note how ! methods here should be the complete interface from Card::Model < ActiveModel when it needs AR methods and features. I think the solution is to have a 'naked' card that is just a Model, and a Card::Storage class that works like formatters to do view stuff. You need to card.to_storage to get the mutation functions used here
-#mv card/mod/active_record/lib/card/model card/lib/card/model save_helper.rb
+git mv card/lib/card/model/save_helper.rb card/mod/active_record/lib/card/model
 
 #./card/lib/card/cache/persistent.rb:      # ARDEP: should be ActiveModel and only create AR object to manage storage process
-#mv card/mod/fetch/lib/card/cache card/lib/card/cache persistent.rb
+git mv card/lib/card/cache/persistent.rb card/mod/fetch/lib/card/cache
 
 #./card/lib/card/migration.rb:  # ARDEP: migration
-#mv card/mod/active_record/lib/card card/lib/card migration.rb
+git mv card/lib/card/migration.rb card/mod/active_record/lib/card
 #./card/lib/card/codename.rb:        # ARDEP: connection
-#mv card/mod/fetch/lib/card card/lib/card codename.rb
+git mv card/lib/card/codename.rb card/mod/fetch/lib/card
 
 #./card/lib/card/director/phases.rb:        # ARDEP: exception RecordInvalid
 #./card/lib/card/director/store.rb:      # ARDEP: comments reflect Card::Storage class
-#mv card/mod/storage/lib/card/director card/lib/card/director phases.rb store.rb
+git mv card/lib/card/director/phases.rb card/mod/storage/lib/card/director
+git mv card/lib/card/director/store.rb card/mod/storage/lib/card/director
 
 #./card/lib/card/tasks/card/migrate.rake:#ARDEP: migrations
-#mv card/mod/rails/lib/card/tasks/card card/lib/card/tasks/card migrate.rake
+git mv card/lib/card/tasks/card/migrate.rake card/mod/rails/lib/card/tasks/card
 
 #./card/lib/card/query/sql_statement.rb:        # ARDEP: connection
 #./card/lib/card/query/clause.rb:      # ARDEP: connection
 #./card/lib/card/query/card_query/run.rb:        # ARDEP: connection
-#mv card/mod/active_record/lib/card card/lib/card/ query # dir
+git mv card/lib/card/query card/mod/active_record/lib/card
 
 # ./card/lib/card/error.rb:    # ARDEP: exceptions RecordNotFound, RecordInvalid
 # ./card/lib/card/error.rb:    # ARDEP ActionController: exceptions BadRequest, MissingFile
-#mv card/mod/active_record/lib/card card/lib/card/ error.rb
+git mv card/lib/card/error.rb card/mod/active_record/lib/card
 
+After the moving, we have these stats:
+content
+  4807 total
+fetch
+  957 total
+storage
+ 129 total
+rails
+111 rails/lib/card/tasks/card/migrate.rake
+active_record
+ 3297 total
+utility
+  99 total
+admin
+  363 total
+core
+  4931 total
+virtual
+ 167 total
+history
+ 1878 total
+basic_formats
+ 1086 total
+item
+ 199 total
+pointer
+ 2164 total
+solid_cache
+ 278 total
+basic_types
+ 137 total
+machines
+  50018 total
+settings
+  947 total
+email
+ 309 total
+follow
+ 2280 total
+developer
+ 202 total
+carrierwave
+ 2324 total
+media
+ 188 total
+search
+ 1232 total
+standard
+  5702 total
+rules
+ 1204 total
+account
+ 1754 total
+navbar
+  432 total
+bootstrap
+  874110 total
+google_analytics
+39 google_analytics/set/all/google_analytics.rb
