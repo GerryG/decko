@@ -33,4 +33,4 @@ mod 'bootstrap'
 mod 'google_analytics'
 gem_mod 'recaptcha'
 # mod 'twitter'
-
+gem_mod 'multicard'
