@@ -1,3 +1,4 @@
+
 namespace :card do
   def importer
     @importer ||= Card::Migration::Import.new Card::Migration.data_path
