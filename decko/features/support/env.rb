@@ -1,4 +1,5 @@
 # -*- encoding : utf-8 -*-
+
 ENV["RAILS_ENV"] = "cucumber"
 
 require "decko"

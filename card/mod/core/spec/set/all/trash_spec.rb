@@ -66,8 +66,8 @@ RSpec.describe Card::Set::All::Trash do
     Card["Sample User"].delete!
     expect(Card["Sample User", :account]).not_to be
     # @signup =
-    #   create_signup "born to die",
-    #                 "+*account" => { "+*email" => "wolf@wagn.org", "+*password" => "wolf" }
+    #   create_signup "born to die", "+*account" =>
+    #                 { "+*email" => "wolf@wagn.org", "+*password" => "wolf" }
     # @signup.update!({})
     # Card::Cache.reset_all
     #
