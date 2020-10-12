@@ -26,7 +26,7 @@ module Cardio
     end
 
     initializer before: :load_environment_config do
-      Rails.autoloaders.main.ignore(File.join(Cardio.gem_root, "lib/card/seed_consts.rb"))
+      Rails.autoloaders.main&.ignore(File.join(Cardio.gem_root, "lib/card/seed_consts.rb"))
       path = File.join(Cardio.gem_root, ENVCONF, "#{Rails.env}.rb")
       paths.add ENVCONF, with: path, glob: "#{Rails.env}.rb"
       paths[ENVCONF].existent.each do |environment|

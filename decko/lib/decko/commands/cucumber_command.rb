@@ -1,8 +1,8 @@
-require File.expand_path("../command", __FILE__)
+require File.expand_path("cardio/card_command", __FILE__)
 
 module Decko
   module Commands
-    class CucumberCommand < Command
+    class CucumberCommand < DeckCommand
       def initialize args
         require "decko"
         require "./config/environment"

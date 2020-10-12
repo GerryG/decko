@@ -1,8 +1,7 @@
-#require "cardio/commands/card_command"
 
 module Cardio
   module Commands
-    class RakeCommand #< CardCommand
+    class RakeCommand
       def initialize rake_task, args={}
         @task = rake_task
         opts = {}
