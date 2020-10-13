@@ -10,11 +10,14 @@ module Decko
     class Application < ::Rails::Railtie::Application
       class Configuration < Decko::Engine::Application::Configuration
 
+warn "RAPPCONF0 #{__LINE__} #{self}"
         PATH = "lib/decko/config/environments"
 
-        def configure &block
+#        def configure &block
 
+warn "RAPPCONF1 #{__LINE__} #{self}"
           super if block_given?
+warn "RAPPCONF2 #{__LINE__} #{self}"
 
           paths.add "config/initializers", glob: "**/*.rb",
             with: File.join(Decko.gem_root, "lib/decko/config/initializers")
@@ -70,7 +73,7 @@ module Decko
             require environment
           end
         end
-      end
+#      end
     end
   end
 end

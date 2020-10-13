@@ -8,10 +8,13 @@ module Cardio
   class Application
     class Configuration < ::Rails::Application::Configuration
 
+warn "CAPPCONF0 #{__LINE__} #{self}"
       ENVCONF = "lib/card/config/environments"
 
-      def configure &block
-        super if (block_given?)
+      #def configure &block
+#warn "CAPPCONF1 #{__LINE__} #{self}"
+#        super if (block_given?)
+#warn "CAPPCONF2 #{__LINE__} #{self}"
 
         Cardio.autoload_paths
 
@@ -31,7 +34,7 @@ module Cardio
         paths[ENVCONF].existent.each do |environment|
           require environment
         end
-      end
+#      end
     end
   end
 end

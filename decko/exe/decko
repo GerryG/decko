@@ -7,4 +7,5 @@ if File.exist?(git_path)
   $LOAD_PATH.unshift(railties_path)
 end
 
+warn "DECKEXE #{__FILE__}:#{__LINE__}"
 require "cardio/script_loader"

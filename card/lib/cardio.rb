@@ -1,7 +1,9 @@
 # -*- encoding : utf-8 -*-
 
+require "rails"
 require "active_support/core_ext/numeric/time"
 djar = "delayed_job_active_record"
+warn "CARDIO #{__LINE__} #{djar} if #{Gem::Specification.find_all_by_name(djar).any?}"
 require djar if Gem::Specification.find_all_by_name(djar).any?
 require "cardio/schema"
 require "cardio/utils"
@@ -19,7 +21,7 @@ module Cardio
   extend Delaying
   CARD_GEM_ROOT = File.expand_path("..", __dir__)
 
-  module RailsConfigMethods
+  module CardClassMethods
     def root
       Rails.root
     end
@@ -29,42 +31,27 @@ module Cardio
     end
 
     def config
+warn "CARDIO #{__LINE__} #{application.config}"
       application.config
     end
 
     def paths
-      application.paths
+      config.paths
     end
   end
 
-  module CardClassMethods
-    include RailsConfigMethods
-
-    def gem_root
-      CARD_GEM_ROOT
-    end
-  end
-
-  class << self
-    include CardClassMethods
-
-    def card_defined?
-      const_defined? "Card"
-    end
-
-    def load_card?
-      ActiveRecord::Base.connection && !card_defined?
-    rescue
+  module ConfigClassMethods
+    def read_only?
+      return (read_only? || ENV["CARD_READ_ONLY"]) if respond_to?(:read_only?)
+      Rails.logger.warn "No read_only? setting. Set CARD_READ_ONLY"
       false
     end
 
-    def cache
-      @cache ||= ::Rails.cache
-    end
-
     def default_configs
+warn "CARDIO #{__LINE__}"
       {
         read_only: read_only?,
+        active_job: :delayed_job,
 
         # if you disable inline styles tinymce's formatting options stop working
         allow_inline_styles: true,
@@ -124,6 +111,7 @@ module Cardio
         load_strategy: :eval,
         cache_set_module_list: false
       }.each_pair do |setting, value|
+warn "CARDIO #{__LINE__} config.send(\"#{setting}=\", #{value}) RT:#{config.respond_to? setting}" if setting == :delayed_job
         # In production mode set_config gets called twice.
         # The second call overrides all deck config settings
         # so don't change settings here if they already exist
@@ -153,10 +141,6 @@ module Cardio
     def autoload_and_watch config, mod_path
       config.autoload_paths += Dir["#{mod_path}/lib"]
       config.watchable_dirs["#{mod_path}/set"] = [:rb]
-    end
-
-    def read_only?
-      !ENV["DECKO_READ_ONLY"].nil?
     end
 
     def set_load_path
@@ -216,6 +200,36 @@ module Cardio
     def future_stamp
       # # used in test data
       @future_stamp ||= Time.zone.local 2020, 1, 1, 0, 0, 0
+    end
+  end
+
+  class << self
+    include CardClassMethods
+    include ConfigClassMethods
+
+    # you can include CardClassMethods in Railties (Deckoties?)
+    # and we don't want to overload specific gem_roots
+    def gem_root
+      CARD_GEM_ROOT
+    end
+
+    def card_defined?
+      const_defined? "Card"
+    end
+
+    def load_card?
+      ActiveRecord::Base.connection && !card_defined?
+    rescue
+      false
+    end
+
+    def cache
+      @cache ||= ::Rails.cache
+    end
+
+    # I need a good home
+    def read_only?
+      !ENV["DECKO_READ_ONLY"].nil?
     end
   end
 end

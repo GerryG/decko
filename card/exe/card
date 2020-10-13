@@ -7,4 +7,5 @@ if File.exist?(git_path)
   $LOAD_PATH.unshift(railties_path)
 end
 
+warn "CARDEXE #{__FILE__}:#{__LINE__} #{File.expand_path("../..",__dir__)} #{ARGV}"
 require "cardio/script_loader"

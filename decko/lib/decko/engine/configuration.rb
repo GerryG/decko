@@ -17,9 +17,12 @@ require "cardio/application/configuration"
 module Decko
   class Engine < ::Rails::Engine
     class Configuration < Cardio::Application::Configuration
+warn "EAPPCONF0 #{__LINE__} #{self}"
 
-      def configure &block
-        super if block_given?
+#      def configure &block
+#warn "EAPPCONF1 #{__LINE__} #{self}"
+#        super if block_given?
+#warn "EAPPCONF2 #{__LINE__} #{self}"
         paths.add "app/controllers", with: "rails/controllers", eager_load: true
         paths.add "gem-assets",      with: "rails/assets"
         paths.add "config/routes.rb", with: "rails/engine-routes.rb"
@@ -36,7 +39,7 @@ module Decko
         #paths["lib/tasks"]     = Decko.paths["lib/tasks"]
         #paths["config/routes.rb"] = Decko.paths["config/routes.rb"]
         #paths["lib"]           = Decko.paths["lib"]
-      end
+#      end
     end
   end
 end

@@ -4,13 +4,11 @@ command = (cmd=$0) =~ /\/([^\/]+)$/ ? $1 : cmd
 
 if command != 'new'
   require 'cardio/script_loader'
+  require 'cardio/application'
 
-=begin
   module Cardio
     module Commands
-      require 'rails'
-
-      class Application < ::Rails::Application
+      class Application < Cardio::Application
         def inherited base
 warn "CARDCMD APP #{__LINE__} #{base} #{self}"
           Rails.app_class = base
@@ -21,7 +19,6 @@ warn "CARDCMD APP #{__LINE__}"
       end
     end
   end
-=end
 
   # this will require <base>/commands/<command>_command
   require Cardio::ScriptLoader.command_path

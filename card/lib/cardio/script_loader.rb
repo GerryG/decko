@@ -1,5 +1,6 @@
 require "rbconfig"
 require "pathname"
+require "cardio"
 
 module Cardio
   module ScriptLoader
@@ -9,17 +10,19 @@ module Cardio
     PATH_ALIAS = { 'cardio' => 'card', 'decko' => 'deck' }
 
     class <<self
-      def script_file name
-        File.join("script", name.to_s)
+      def script_file
+        File.join("script", @command.to_s)
+      end
+
+      def script_dir?
+        Pathname.new("script").exist?
       end
 
       attr_reader :command
 
       def base
         @base ||= begin
-          @command ||= ((cmd = $0) =~ /(script)?\/([^\/]+)$/) ? $2 : cmd
-          @notscript = $1.nil?
-
+          @command ||= ((cmd = $0) =~ /\/([^\/]+)$/) ? $1 : cmd
           @command = PATH_ALIAS[@command] unless PATH_ALIAS[@command].nil?
           case @command
             when 'deck'; 'decko'
@@ -35,28 +38,18 @@ module Cardio
       def exec_script! cmd=nil, &block
         @command = cmd unless cmd.nil?
         base # make sure base/command get set from $0
-        cwd = Dir.pwd
-        unless @notscript && ( in_application?(@command) ||
-               in_application_subdirectory?(@command) )
+        path = Pathname.new(cwd = Dir.pwd)
+        unless path.root? || script_dir?
           return (yield(@base) if block_given?)
         end
-        exec RUBY, script_file(@command), *ARGV if in_application?(@command)
+        exec RUBY, script_file, *ARGV
         Dir.chdir("..") do
           # Recurse in a chdir block: if the search fails we want to be sure
           # the application is generated in the original working directory.
-          exec_script!(@command) unless cwd == Dir.pwd
+          exec_script! unless cwd == Dir.pwd
         end
       rescue SystemCallError
         # could not chdir, no problem just return
-      end
-
-      def in_application? name
-        File.exist?(script_file name)
-      end
-
-      def in_application_subdirectory? name, path=Pathname.new(Dir.pwd)
-        File.exist?(File.join(path, script_file(name))) ||
-          !path.root? && in_application_subdirectory?(name, path.parent)
       end
 
       def command_path cmd=nil
@@ -67,7 +60,7 @@ module Cardio
   end
 end
 
- Cardio::ScriptLoader.exec_script! do |base|
+Cardio::ScriptLoader.exec_script! do |base|
 
   require "rails/ruby_version_check"
   Signal.trap("INT") { puts; exit(1) }
