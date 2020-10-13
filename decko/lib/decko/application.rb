@@ -1,4 +1,4 @@
-require "decko/railtie/application"
+require "cardio/application"
 
 module Decko
   class Application < Cardio::Application
