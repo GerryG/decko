@@ -1,6 +1,5 @@
 
 require "cardio/commands/command"
-warn "DECKOCMD #{__LINE__}:#{__FILE__}"
 
 module Decko
   module Commands

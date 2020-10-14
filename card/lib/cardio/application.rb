@@ -23,7 +23,6 @@ module Cardio
                 #before: :connect_on_load, group: :all do
       add_path "lib/card/config/environments", glob: "#{Rails.env}.rb", root: Cardio.gem_root
       paths["lib/card/config/environments"].existent.each do |environment|
-warn "load env #{environment}"
         require environment
       end
     end
@@ -42,7 +41,6 @@ warn "load env #{environment}"
       ActiveSupport.on_load(:before_card) do
       end
       ActiveSupport.on_load(:after_application_record) do
-warn "load ap rec trig, load card"
         Cardio.load_card!
       end
     end

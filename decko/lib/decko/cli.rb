@@ -34,23 +34,19 @@ end
 # config/application.rb, therefore any rails and use card commands
 # otherwise we are decko new and decko/commands.rb should handle it.
 # The first case here is in app, replaces script_loader method
-if APP_CONF = ScriptLoader.find_app_config
-warn "CLI #{__FILE__}:#{__LINE__} #{APP_CONF} (require boot #{File.expand_path("../boot", APP_CONF)}"
+if defined?(APP_CONF) || APP_CONF = ScriptLoader.find_app_config
   require APP_CONF
   require File.expand_path("../boot", APP_CONF)
-  require 'cardio/commands'
-else
-
-  require "rails/ruby_version_check"
-  Signal.trap("INT") { puts; exit(1) }
-
-#   if ARGV.first == 'plugin'
-#    ARGV.shift
-#    require 'decko/commands/plugin_new'
-#   else
-
-  # should be decko new or usage
-  require "decko/commands/application"
- # end
+  require 'decko/commands'
 end
+
+ require "rails/ruby_version_check"
+ Signal.trap("INT") { puts; exit(1) }
+
+#if ARGV.first == 'plugin'
+#  ARGV.shift
+#  require 'decko/commands/plugin_new'
+#else
+  require "decko/commands/application"
+#end
 

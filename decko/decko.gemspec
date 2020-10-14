@@ -7,9 +7,9 @@ DeckoGem.gem "decko" do |s, d|
   s.description =
     "a wiki approach to structured data, dynamic interaction,  and web design"
 
-  s.files = Dir["{db,lib,public,set}/**/*"]
+  s.files = Dir["{exe,app,lib,rails}/**/*"]
 
-  s.bindir = "bin"
+  s.bindir = "exe"
   s.executables = ["decko"]
   s.add_runtime_dependency "card", d.card_version
 end

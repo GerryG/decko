@@ -1,12 +1,6 @@
 # add method in? to Object class
 require "active_support/core_ext/object/inclusion"
 
-def load_rake_tasks
-  require "./config/environment"
-  require "rake"
-  Decko::Application.load_tasks
-end
-
 require 'cardio/commands'
 RAILS_COMMANDS = %w( generate destroy plugin benchmarker profiler console
                      server dbconsole application runner ).freeze
@@ -51,6 +45,8 @@ module Decko
       end
 
       def run_task command
+        load_rake_tasks
+        require "decko/commands/application"
         require "decko/commands/rake_command"
         RakeCommand.new("decko:#{command}", ARGV).run
       end
@@ -58,6 +54,12 @@ module Decko
       def run_jasmine
         require "decko/commands/rake_command"
         RakeCommand.new("spec:javascript", envs: "test").run
+      end
+
+      def load_rake_tasks
+        require "rake"
+        require "./config/environment"
+        Decko::Application.load_tasks
       end
     end
   end
@@ -71,8 +73,13 @@ if supported_rails_command? command
   # without this, the card generators don't list with: decko g --help
   require "generators/card" if command == "generate"
   require "rails/commands"
+elsif command == "-T"
+  load_rake_tasks
 else
   ARGV.shift
+  lookup = command
+  lookup = $1 if command =~ /^([^:]+):/
+
   case command
   when "--version", "-v"
     puts "Decko #{Card::Version.release}"

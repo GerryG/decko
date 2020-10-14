@@ -9,7 +9,6 @@ else
   cmd = ARGV.shift
 end
 
-require "cardio/application"
-
 require "cardio/commands"
+
 Cardio::Commands.run_new
