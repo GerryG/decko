@@ -7,7 +7,6 @@ module Decko
 
   class << self
     include Cardio::CardClassMethods
-    include Cardio::ConfigClassMethods
 
     def gem_root
       DECKO_GEM_ROOT

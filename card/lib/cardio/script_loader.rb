@@ -23,6 +23,8 @@ module Cardio
       def base
         @base ||= begin
           @command ||= ((cmd = $0) =~ /\/([^\/]+)$/) ? $1 : cmd
+          @notscript = nil # FIXME, remove var below and here$1.nil?
+
           @command = PATH_ALIAS[@command] unless PATH_ALIAS[@command].nil?
           case @command
             when 'deck'; 'decko'
@@ -50,6 +52,15 @@ module Cardio
         end
       rescue SystemCallError
         # could not chdir, no problem just return
+      end
+
+      def in_application? name
+        File.exist?(script_file name)
+      end
+
+      def in_application_subdirectory? name, path=Pathname.new(Dir.pwd)
+        File.exist?(File.join(path, script_file(name))) ||
+          !path.root? && in_application_subdirectory?(name, path.parent)
       end
 
       def command_path cmd=nil

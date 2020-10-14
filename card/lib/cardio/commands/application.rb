@@ -6,6 +6,7 @@ if command != 'new'
   require 'cardio/script_loader'
   require 'cardio/application'
 
+=begin
   module Cardio
     module Commands
       class Application < Cardio::Application
@@ -19,6 +20,7 @@ warn "CARDCMD APP #{__LINE__}"
       end
     end
   end
+=end
 
   # this will require <base>/commands/<command>_command
   require Cardio::ScriptLoader.command_path
