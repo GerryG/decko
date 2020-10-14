@@ -37,7 +37,7 @@ end
 if APP_CONF = ScriptLoader.find_app_config
 warn "CLI #{__FILE__}:#{__LINE__} #{APP_CONF} (require boot #{File.expand_path("../boot", APP_CONF)}"
   require APP_CONF
-  require File.expand_path("../config/boot", APP_CONF)
+  require File.expand_path("../boot", APP_CONF)
   require 'cardio/commands'
 else
 
