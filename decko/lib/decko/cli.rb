@@ -1,17 +1,56 @@
 require "rbconfig"
-require "cardio/script_loader"
+require "pathname"
 
-# If we are inside a Decko application this method performs an exec and thus
-# the rest of this script is not run.
-Cardio::ScriptLoader.exec_script! :decko
+module ScriptLoader
+  RUBY = File.join(*RbConfig::CONFIG.values_at("bindir", "ruby_install_name")) +
+         RbConfig::CONFIG["EXEEXT"]
+  # replace with current cli.rb
+  APP_DECKO = File.join("config", "application.rb")
 
-require "rails/ruby_version_check"
-Signal.trap("INT") { puts; exit(1) }
+  def self.find_app_config
+    cwd = Dir.pwd
+    return unless in_decko_application? || in_decko_application_subdirectory?
+    return File.join(cwd, APP_DECKO)
+    Dir.chdir("..") do
+      # Recurse in a chdir block: if the search fails we want to be sure
+      # the application is generated in the original working directory.
+      exec_script_decko! unless cwd == Dir.pwd
+    end
+  rescue SystemCallError
+    # could not chdir, no problem just return
+  end
 
-# if ARGV.first == 'plugin'
-#  ARGV.shift
-#  require 'decko/commands/plugin_new'
-# else
+  def self.in_decko_application?
+    File.exist?(APP_DECKO)
+  end
 
-require "decko/commands/application"
-# end
+  def self.in_decko_application_subdirectory? path=Pathname.new(Dir.pwd)
+    File.exist?(File.join(path, APP_DECKO)) ||
+      !path.root? && in_decko_application_subdirectory?(path.parent)
+  end
+end
+
+# If we are inside a Decko/Card application (have a parent with
+# config/application.rb, therefore any rails and use card commands
+# otherwise we are decko new and decko/commands.rb should handle it.
+# The first case here is in app, replaces script_loader method
+if APP_CONF = ScriptLoader.find_app_config
+warn "CLI #{__FILE__}:#{__LINE__} #{APP_CONF} (require boot #{File.expand_path("../config/boot", APP_CONF)}"
+  require APP_CONF
+  require File.expand_path("../config/boot", APP_CONF)
+  require 'cardio/commands'
+else
+
+  require "rails/ruby_version_check"
+  Signal.trap("INT") { puts; exit(1) }
+
+#   if ARGV.first == 'plugin'
+#    ARGV.shift
+#    require 'decko/commands/plugin_new'
+#   else
+
+  # should be decko new or usage
+  require "decko/commands/application"
+ # end
+end
+
