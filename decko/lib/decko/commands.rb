@@ -7,10 +7,11 @@ def load_rake_tasks
   Decko::Application.load_tasks
 end
 
+require 'cardio/commands'
 RAILS_COMMANDS = %w( generate destroy plugin benchmarker profiler console
                      server dbconsole application runner ).freeze
 DECKO_COMMANDS = %w(new cucumber rspec jasmine).freeze
-DECKO_DB_COMMANDS = %w(seed reseed load update).freeze
+DECKO_TASK_COMMANDS = %w(seed reseed load update).freeze
 
 ALIAS = {
   "rs" => "rspec",
@@ -30,20 +31,15 @@ end
 
 ARGV << "--help" if ARGV.empty?
 
+require 'cardio/commands'
+
 module Decko
   module Commands
     class << self
-      def run_new
-        if ARGV.first.in?(["-h", "--help"])
-          require "decko/commands/application"
-        else
-          puts "Can't initialize a new deck within the directory of another, " \
-           "please change to a non-deck directory first.\n"
-          puts "Type 'decko' for help."
-          exit(1)
-        end
-      end
-
+      include Decko::ClassMethds
+      include Cardio::ClassMethods
+    end
+    module ClassMethods
       def run_rspec
         require "decko/commands/rspec_command"
         RspecCommand.new(ARGV).run
@@ -54,7 +50,7 @@ module Decko
         CucumberCommand.new(ARGV).run
       end
 
-      def run_db_task command
+      def run_task command
         require "decko/commands/rake_command"
         RakeCommand.new("decko:#{command}", ARGV).run
       end
@@ -82,8 +78,9 @@ else
     puts "Decko #{Card::Version.release}"
   when *DECKO_COMMANDS
     Decko::Commands.send("run_#{command}")
-  when *DECKO_DB_COMMANDS
-    Decko::Commands.run_db_task command
+  when *DECKO_TASK_COMMANDS
+  when *Cardio::Commands::CARD_TASK_COMMANDS
+    Decko::Commands.run_task command
   else
     puts "Error: Command not recognized" unless command.in?(["-h", "--help"])
     puts <<-EOT
