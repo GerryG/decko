@@ -10,8 +10,7 @@
 coverage
 log/*
 pkg
-card*gem
-decko*gem
+*.gem
 *.project
 *.sqlite3
 *.DS_Store
@@ -23,3 +22,4 @@ test_work/*
 decko/spec/node_modules
 decko/spec/cypress/screenshots
 decko/spec/cypress/videos
+vendor
