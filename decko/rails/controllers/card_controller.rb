@@ -1,4 +1,5 @@
 # -*- encoding : utf-8 -*-
+require 'recaptcha/verify'
 
 # Decko's only controller.
 class CardController < ApplicationController

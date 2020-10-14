@@ -1,4 +1,3 @@
-
 require 'cardio/commands/card_command'
 
 module Cardio

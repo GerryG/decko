@@ -17,7 +17,7 @@ module Cardio
 
       def base
         @base ||= begin
-          @command = ((cmd = $0) =~ /(script)?\/([^\/]+)$/) ? $2 : cmd
+          @command ||= ((cmd = $0) =~ /(script)?\/([^\/]+)$/) ? $2 : cmd
           @notscript = $1.nil?
 
           @command = PATH_ALIAS[@command] unless PATH_ALIAS[@command].nil?
@@ -32,7 +32,8 @@ module Cardio
       # If we are NOT inside a Card application this method performs calls
       # the block when given on the parsed scriptname.
       # Parses command to run and require base from the command and aliases
-      def exec_script! &block
+      def exec_script! cmd=nil, &block
+        @command = cmd unless cmd.nil?
         base # make sure base/command get set from $0
         cwd = Dir.pwd
         unless @notscript && ( in_application?(@command) ||
@@ -58,7 +59,8 @@ module Cardio
           !path.root? && in_application_subdirectory?(name, path.parent)
       end
 
-      def command_path
+      def command_path cmd=nil
+        @command = cmd unless cmd.nil?
         "#{base}/commands/#{@command}_command"
       end
     end
@@ -77,5 +79,5 @@ end
 
   # end
   # FIXME: if path/... not there, use "cardio" (skip aliasing above?)
-  require "#{base}/commands/application"
+  #require "#{base}/commands/application"
 end

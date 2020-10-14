@@ -1,6 +1,8 @@
 
 if ARGV.first != "new"
-  require 'cardio/commands' # .../commands/card_command ?
+  require 'cardio/script_loader'
+  # this will require <base>/commands/<command>_command
+  require Cardio::ScriptLoader.command_path 'card'
 
 else
   require "rails/generators"

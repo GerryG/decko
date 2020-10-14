@@ -19,7 +19,7 @@ module Cardio
   extend Delaying
   CARD_GEM_ROOT = File.expand_path("..", __dir__)
 
-  module RailsConfigMethods
+  module CardClassMethods
     def root
       Rails.root
     end
@@ -37,16 +37,12 @@ module Cardio
     end
   end
 
-  module CardClassMethods
-    include RailsConfigMethods
+  class << self
+    include CardClassMethods
 
     def gem_root
       CARD_GEM_ROOT
     end
-  end
-
-  class << self
-    include CardClassMethods
 
     def card_defined?
       const_defined? "Card"
