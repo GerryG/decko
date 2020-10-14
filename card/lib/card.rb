@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 
+raise "Defined?" if Cardio.card_defined?
 ActiveSupport.run_load_hooks(:before_card, self)
 
 # Cards are wiki-inspired building blocks.
@@ -92,7 +93,7 @@ ActiveSupport.run_load_hooks(:before_card, self)
 # card presentation, while events customize card transactions. Or, if you like, views
 # and events respectively alter cards in _space_ and _time_.
 #
-# Both views and events are defined in {Card::Mod mods}, short for modules or
+# Both views and events are defined in {Cardio::Mod mods}, short for modules or
 # modifications.
 #
 # {Card::Set::Format::AbstractFormat More on views}

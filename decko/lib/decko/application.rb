@@ -1,20 +1,12 @@
 # -*- encoding : utf-8 -*-
 
 require "decko/engine"
-require_relative "config/initializers/sedate_parser"
-
-Bundler.require :default, *Rails.groups
+require "cardio/application"
+djar = "delayed_job_active_record"
+require djar if Gem::Specification.find_all_by_name(djar).any?
 
 module Decko
-  class Application < Rails::Application
-    initializer :load_decko_environment_config,
-                before: :load_environment_config, group: :all do
-      add_path paths, "lib/decko/config/environments", glob: "#{Rails.env}.rb"
-      paths["lib/decko/config/environments"].existent.each do |environment|
-        require environment
-      end
-    end
-
+  class Application < Cardio::Application
     class << self
       def inherited base
         super
@@ -24,17 +16,17 @@ module Decko
       end
     end
 
-    def add_path paths, path, options={}
+    # override in each domain with local root
+    def root_path option
       root = options.delete(:root) || Decko.gem_root
-      options[:with] = File.join(root, (options[:with] || path))
-      paths.add path, options
     end
 
-    def config
-      @config ||= begin
-        config = super
+    def configure &block
+      super do
 
-        Cardio.set_config config
+        instance_eval &block if block_given?
+
+        config.active_job.queue_adapter = :delayed_job
 
         # any config settings below:
         # (a) do not apply to Card used outside of a Decko context
@@ -50,7 +42,6 @@ module Decko
         # overridable decko-specific settings don't have a place yet
         # but should probably follow the cardio pattern.
 
-        # config.load_defaults "6.0"
         config.autoloader = :zeitwerk
         config.load_default = "6.0"
         config.i18n.enforce_available_locales = true
@@ -64,14 +55,9 @@ module Decko
 
         # Rails.autoloaders.log!
         Rails.autoloaders.main.ignore(File.join(Cardio.gem_root, "lib/card/seed_consts.rb"))
-        config
-      end
-    end
+        # paths configuration
 
-    def paths
-      @paths ||= begin
-        paths = super
-        Cardio.set_paths paths
+        Cardio.set_paths
 
         paths.add "files"
 
@@ -82,8 +68,6 @@ module Decko
           add_path paths, "config/routes.rb",
                    with: "rails/application-routes.rb"
         end
-
-        paths
       end
     end
   end
