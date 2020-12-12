@@ -43,6 +43,7 @@ module Decko
     end
 
     initializer :connect_on_load do
+      # ARDEP should be safe, only on-load, maybe also defined?(ActiveRecord) protection needed?
       ActiveSupport.on_load(:active_record) do
         ActiveRecord::Base.establish_connection(::Rails.env.to_sym)
       end

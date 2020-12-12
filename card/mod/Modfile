@@ -1,3 +1,7 @@
+mod 'content'
+mod 'fetch'
+mod 'storage'
+mod 'active_record'
 mod 'utility'
 mod 'admin'
 mod 'core'

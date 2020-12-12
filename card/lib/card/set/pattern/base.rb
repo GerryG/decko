@@ -142,6 +142,7 @@ class Card
           card.superleft&.type_name || quick_type(card.name.left_name)
         end
 
+        # FIXME: why not make this a fetch method to use more generally too
         def quick_type name
           if name.present?
             card = Card.fetch name, skip_modules: true, new: {}
